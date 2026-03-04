@@ -6,7 +6,7 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/02 15:30:48 by tom               #+#    #+#             */
-/*   Updated: 2026/03/02 16:16:45 by tom              ###   ########.fr       */
+/*   Updated: 2026/03/04 13:51:24 by tom              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,14 +50,39 @@ void initfList(struct flags *flags) {
 	flags->sort = 0;
 }
 
-int main(int ac, char **av) {
-	struct flags flags;
-	struct dirent *readDir;
+static int	cmp_name(const void *a, const void *b)
+{
+	char *ca = ft_strdup(((struct filesData *)a)->name);
+	char *cb = ft_strdup(((struct filesData *)b)->name);
 
-	DIR *dirfile;
-	char *to_open[ac-1];
-	int j = 0;
-	to_open[0] = "."; to_open[1] = NULL;
+	char *na = ca;
+	char *nb = cb;
+	/* ignorer le point initial */
+	while (*na == '.') na++;
+	while (*nb == '.') nb++;
+
+	/* comparaison case-insensitive */
+	for (int i = 0; na[i]; i++) na[i] = tolower(na[i]);
+	for (int i = 0; nb[i]; i++) nb[i] = tolower(nb[i]);
+	
+	int res = ft_strncmp(na, nb, 256);
+
+	free(ca);
+	free(cb);
+
+	return res;
+}
+
+int main(int ac, char **av) {
+	struct flags	flags;
+	struct dirent	*readDir;
+	DIR				*dirfile;
+	char			*to_open[ac];
+	int				j = 0;
+
+	initfList(&flags);
+	to_open[0] = ".";
+	to_open[1] = NULL;
 	if (ac > 1) {
 		for (int i = 1; i < ac; i++) {
 			if (av[i][0] == '-') {
@@ -66,29 +91,40 @@ int main(int ac, char **av) {
 			} else {
 				to_open[j++] = av[i];
 			}
-			to_open[j] = NULL;
 		}
+		if (to_open[j])
+			to_open[j + 1] = NULL;
+		else
+			to_open[j] = NULL;
 	}
 	bool format = (j > 1);
 
 	for (int i = 0; to_open[i]; i++) {
 		dirfile = opendir(to_open[i]);
 		if (dirfile) {
+			struct filesData	files[500];
+			int					k = 0;
+
 			if (format == true) printf("%s:\n", to_open[i]);
 			while ((readDir = readdir(dirfile)) != NULL) {
-				// skipped hidden files
-				if ((readDir->d_name[0] == '.' && !flags_is_set(flags.flags_mask, 'a'))) continue;
-
-				// color folder to increased readability
-				filePrinter(readDir->d_name, readDir->d_type);
+				/* skip hidden files when -a not set */
+				if (readDir->d_name[0] == '.' && !flags_is_set(flags.flags_mask, 'a'))
+					continue;
+				strncpy(files[k].name, readDir->d_name, 255);
+				files[k].name[255] = '\0';
+				files[k].type = readDir->d_type;
+				k++;
 			}
+			qsort(files, k, sizeof(struct filesData), cmp_name);
+			for (int m = 0; m < k; m++)
+				filePrinter(files[m].name, files[m].type);
 			putchar('\n');
 			if (to_open[i + 1] != NULL)
 				putchar('\n');
 			closedir(dirfile);
 		} else {
 			printf("ls: cannot access '%s': No such file or directory", to_open[i]);
-		} 
+		}
 	}
 	return EXIT_SUCCESS;
 }
