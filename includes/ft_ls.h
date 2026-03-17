@@ -36,23 +36,17 @@ enum {
 	FLAG_L	 = 1u << 3,  /* -l : long format */
 	FLAG_S	 = 1u << 4,  /* -s : show block size */
 	FLAG_R_CAP = 1u << 5,  /* -R : recursive */
+	FLAG_R = 1u << 6,  /* -r : reverse sort */
 };
 
 struct flags {
 	uint32_t flags_mask;
-	char sort;
-	//sort:
-	//	0   -> alphabetical (default)
-	//	'r' -> reverse the sort
-	//	't' -> by modification time
-	//	'u' -> by access time
-	//	'S' -> by size
 };
 
 struct filesData {
 	char			name[256];
 	unsigned char	type;
-	struct stat		st;
+	struct stat		stat;
 };
 
 /* prototypes */

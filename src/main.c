@@ -6,7 +6,7 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/02 15:30:48 by tom               #+#    #+#             */
-/*   Updated: 2026/03/04 13:51:24 by tom              ###   ########.fr       */
+/*   Updated: 2026/03/17 15:32:20 by tom              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ static const uint32_t FLAG_MAP[256] = {
 	['l'] = FLAG_L,
 	['s'] = FLAG_S,
 	['R'] = FLAG_R_CAP,
+	['r'] = FLAG_R,
 };
 
 static inline int flags_is_set(uint32_t mask, unsigned char c) {
@@ -47,7 +48,6 @@ bool handleFlags(char *flags, struct flags *tflags) {
 
 void initfList(struct flags *flags) {
 	flags->flags_mask = 0;
-	flags->sort = 0;
 }
 
 static int	cmp_name(const void *a, const void *b)
@@ -116,8 +116,13 @@ int main(int ac, char **av) {
 				k++;
 			}
 			qsort(files, k, sizeof(struct filesData), cmp_name);
-			for (int m = 0; m < k; m++)
-				filePrinter(files[m].name, files[m].type);
+			if (flags_is_set(flags.flags_mask, 'r')) {
+				k-=1;
+				for (; k >= 0; k--)
+					filePrinter(files[k].name, files[k].type);
+			} else
+				for (int m = 0; m < k; m++)
+					filePrinter(files[m].name, files[m].type);
 			putchar('\n');
 			if (to_open[i + 1] != NULL)
 				putchar('\n');
