@@ -6,25 +6,11 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/02 15:30:48 by tom               #+#    #+#             */
-/*   Updated: 2026/04/27 16:03:23 by tom              ###   ########.fr       */
+/*   Updated: 2026/04/27 16:30:49 by tom              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
-
-static const uint32_t FLAG_MAP[256] = {
-	['a'] = FLAG_A,
-	['d'] = FLAG_D,
-	// ['g'] = FLAG_G,
-	['l'] = FLAG_L,
-	['s'] = FLAG_S,
-	['R'] = FLAG_R_CAP,
-	['r'] = FLAG_R,
-};
-
-static inline int flagIsSet(uint32_t mask, unsigned char c) {
-	return (mask & FLAG_MAP[c]) != 0;
-}
 
 bool handleFlags(char *flags, struct env *tflags) {
 	for (int i = 1; flags[i]; i++) {

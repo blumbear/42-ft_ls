@@ -9,7 +9,12 @@
 #include <stdint.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <errno.h>
+#include <stdio.h>
+#include <pwd.h>
+#include <time.h>
+#include <grp.h>
 #include "libft.h"
 
 #define RESET		"\x1b[0m"
@@ -50,14 +55,31 @@ struct filesData {
 	struct stat		*stat;
 };
 
-/* printer.c */
-void	printLine(uint32_t flags_mask, struct filesData files);
-void	filesPrinter(struct filesData files[500], uint32_t flags_mask, int last, size_t size);
-void printPerm(struct filesData file);
+
+static const uint32_t FLAG_MAP[256] = {
+	['a'] = FLAG_A,
+	['d'] = FLAG_D,
+	// ['g'] = FLAG_G,
+	['l'] = FLAG_L,
+	['s'] = FLAG_S,
+	['R'] = FLAG_R_CAP,
+	['r'] = FLAG_R,
+};
 
 /* main.c */
+static inline int flagIsSet(uint32_t mask, unsigned char c) {
+	return (mask & FLAG_MAP[c]) != 0;
+}
 bool	handleFlags(char *flags, struct env *tflags);
 void	initfList(struct env *flags);
+
+/* printer.c */
+void printUser(struct filesData file);
+void printLongFormat(struct filesData file);
+void	printLine(uint32_t flags_mask, struct filesData files);
+void	filesPrinter(struct filesData files[500], uint32_t flags_mask, int last, size_t size);
+void	printPerm(struct filesData file);
+
 
 //struct dirent {
 //     ino_t          d_ino;       /* Inode number */
