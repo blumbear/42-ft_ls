@@ -6,40 +6,11 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/27 16:16:58 by tom               #+#    #+#             */
-/*   Updated: 2026/04/27 17:35:50 by tom              ###   ########.fr       */
+/*   Updated: 2026/04/27 17:45:15 by tom              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
-
-void printLine(uint32_t flags_mask, struct filesData files) {
-	if (flagIsSet(flags_mask, 's')) ft_printf("  %d ", (files.stat->st_blocks * 512 + 1023) / 1024);
-	
-	if (flagIsSet(flags_mask, 'l')) printLongFormat(files);
-
-	if (files.type == 4) ft_printf("\x1b[1m\x1b[34m%s  \x1b[0m", files.name);
-	else ft_printf("%s  ", files.name);
-	
-	if (flagIsSet(flags_mask, 'l') || flagIsSet(flags_mask, 'g'))
-		write(1, "\n", 1);
-}
-
-void filesPrinter(struct filesData files[500], uint32_t flags_mask, int last, size_t size) {
-	if (flagIsSet(flags_mask, 'l') || flagIsSet(flags_mask, 's'))
-		ft_printf("total %d\n", size);
-	if (flagIsSet(flags_mask, 'r')) {
-		last--;
-		for (; last >= 0; last--){
-			printLine(flags_mask, files[last]);
-			if (files[last].stat) free(files[last].stat);
-		}
-	} else {
-		for (int k = 0; k < last; k++){
-			printLine(flags_mask, files[k]);
-			if (files[k].stat) free(files[k].stat);
-		}
-	}
-}
 
 void printPerm(struct filesData file){
 	if (file.type == 4) write(1, "d", 1);
@@ -102,6 +73,14 @@ void printLastModification(struct filesData file) {
 	ft_printf("%s ", test);
 }
 
+void printGroupFormat(struct filesData file) {
+	printPerm(file);
+	printLink(file);
+	printGroup(file);
+	printSize(file);
+	printLastModification(file);
+}
+
 void printLongFormat(struct filesData file) {
 	printPerm(file);
 	printLink(file);
@@ -109,4 +88,34 @@ void printLongFormat(struct filesData file) {
 	printGroup(file);
 	printSize(file);
 	printLastModification(file);
+}
+
+void printLine(uint32_t flags_mask, struct filesData files) {
+	if (flagIsSet(flags_mask, 's')) ft_printf("  %d ", (files.stat->st_blocks * 512 + 1023) / 1024);
+	
+	if (flagIsSet(flags_mask, 'g')) printGroupFormat(files);
+	else if (flagIsSet(flags_mask, 'l')) printLongFormat(files);
+
+	if (files.type == 4) ft_printf("\x1b[1m\x1b[34m%s  \x1b[0m", files.name);
+	else ft_printf("%s  ", files.name);
+	
+	if (flagIsSet(flags_mask, 'l') || flagIsSet(flags_mask, 'g'))
+		write(1, "\n", 1);
+}
+
+void filesPrinter(struct filesData files[500], uint32_t flags_mask, int last, size_t size) {
+	if (flagIsSet(flags_mask, 'l') || flagIsSet(flags_mask, 's'))
+		ft_printf("total %d\n", size);
+	if (flagIsSet(flags_mask, 'r')) {
+		last--;
+		for (; last >= 0; last--){
+			printLine(flags_mask, files[last]);
+			if (files[last].stat) free(files[last].stat);
+		}
+	} else {
+		for (int k = 0; k < last; k++){
+			printLine(flags_mask, files[k]);
+			if (files[k].stat) free(files[k].stat);
+		}
+	}
 }

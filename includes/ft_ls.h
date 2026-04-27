@@ -36,7 +36,7 @@
 enum {
 	FLAG_A	 = 1u << 0,  /* -a : show hidden files */
 	FLAG_D	 = 1u << 1,  /* -d : list directories themselves */
-	// FLAG_G	 = 1u << 2,  /* -g : (unused / group) */
+	FLAG_G	 = 1u << 2,  /* -g : (unused / group) */
 	FLAG_L	 = 1u << 3,  /* -l : long format */
 	FLAG_R = 1u << 4,  /* -r : reverse sort */
 	FLAG_R_CAP = 1u << 5,  /* -R : recursive */
@@ -59,7 +59,7 @@ struct filesData {
 static const uint32_t FLAG_MAP[256] = {
 	['a'] = FLAG_A,
 	['d'] = FLAG_D,
-	// ['g'] = FLAG_G,
+	['g'] = FLAG_G,
 	['l'] = FLAG_L,
 	['s'] = FLAG_S,
 	['R'] = FLAG_R_CAP,
@@ -74,8 +74,8 @@ bool	handleFlags(char *flags, struct env *tflags);
 void	initfList(struct env *flags);
 
 /* printer.c */
-void printUser(struct filesData file);
-void printLongFormat(struct filesData file);
+void	printUser(struct filesData file);
+void	printLongFormat(struct filesData file);
 void	printLine(uint32_t flags_mask, struct filesData files);
 void	filesPrinter(struct filesData files[500], uint32_t flags_mask, int last, size_t size);
 void	printPerm(struct filesData file);
