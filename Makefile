@@ -4,7 +4,7 @@ CC = cc
 CFLAGS = -Wall -Wextra -Werror -Iincludes
 LFLAGS = -lft -L./libft
 
-FILES = printer main
+FILES = printer cmpFunction main
 
 LIBFT = libft/libft.a
 

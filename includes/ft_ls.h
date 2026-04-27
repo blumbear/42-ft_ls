@@ -41,7 +41,7 @@ enum {
 	FLAG_R = 1u << 4,  /* -r : reverse sort */
 	FLAG_R_CAP = 1u << 5,  /* -R : recursive */
 	FLAG_S	 = 1u << 6,  /* -s : show block size */
-	// FLAG_S_CAP = 1u << 7, /* -S : Sort by size */
+	FLAG_S_CAP = 1u << 7, /* -S : Sort by size */
 };
 
 struct env {
@@ -64,7 +64,12 @@ static const uint32_t FLAG_MAP[256] = {
 	['s'] = FLAG_S,
 	['R'] = FLAG_R_CAP,
 	['r'] = FLAG_R,
+	['S'] = FLAG_S_CAP,
 };
+
+int	cmpName(const void *a, const void *b);
+int	cmpSize(const void *a, const void *b);
+
 
 /* main.c */
 static inline int flagIsSet(uint32_t mask, unsigned char c) {

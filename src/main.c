@@ -6,11 +6,19 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/02 15:30:48 by tom               #+#    #+#             */
-/*   Updated: 2026/04/27 16:30:49 by tom              ###   ########.fr       */
+/*   Updated: 2026/04/27 18:00:44 by tom              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
+
+void sortFiles(struct filesData files[500], int k, struct env flags) {
+	if (flagIsSet(flags.flags_mask, 'S'))
+		qsort(files, k, sizeof(struct filesData), cmpSize);
+	else
+		qsort(files, k, sizeof(struct filesData), cmpName);
+
+}
 
 bool handleFlags(char *flags, struct env *tflags) {
 	for (int i = 1; flags[i]; i++) {
@@ -30,27 +38,6 @@ bool handleFlags(char *flags, struct env *tflags) {
 void initfList(struct env *flags) {
 	flags->flags_mask = 0;
 	flags->stat = false;
-}
-
-static int	cmpName(const void *a, const void *b)
-{
-	char *ca = ft_strdup(((struct filesData *)a)->name);
-	char *cb = ft_strdup(((struct filesData *)b)->name);
-
-	char *na = ca;
-	char *nb = cb;
-	while (*na == '.') na++;
-	while (*nb == '.') nb++;
-
-	for (int i = 0; na[i]; i++) na[i] = tolower(na[i]);
-	for (int i = 0; nb[i]; i++) nb[i] = tolower(nb[i]);
-	
-	int res = ft_strncmp(na, nb, 256);
-
-	free(ca);
-	free(cb);
-
-	return res;
 }
 
 int main(int ac, char **av) {
@@ -102,7 +89,7 @@ int main(int ac, char **av) {
 				} else files[k].stat = NULL;
 				k++;
 			}
-			qsort(files, k, sizeof(struct filesData), cmpName);
+			sortFiles(files, k, flags);
 			filesPrinter(files, flags.flags_mask, k, size);
 			putchar('\n');
 			if (to_open[i + 1] != NULL)
