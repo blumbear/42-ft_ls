@@ -50,20 +50,41 @@ struct filesData {
 	struct stat		*stat;
 };
 
-/* prototypes */
-void	filesPrinter(struct filesData files[500], uint32_t flags_mask, int last);
+/* printer.c */
+void	printLine(uint32_t flags_mask, struct filesData files);
+void	filesPrinter(struct filesData files[500], uint32_t flags_mask, int last, size_t size);
+void printPerm(struct filesData file);
+
+/* main.c */
 bool	handleFlags(char *flags, struct env *tflags);
 void	initfList(struct env *flags);
 
 //struct dirent {
-//	ino_t		  d_ino;	   /* Inode number */
-//	off_t		  d_off;	   /* Not an offset; see below */
-//	unsigned short d_reclen;	/* Length of this record */
-//	unsigned char  d_type;	  /* Type of file; not supported
-//								   by all filesystem types */
-//	char		   d_name[256]; /* Null-terminated filename */
+//     ino_t          d_ino;       /* Inode number */
+//     off_t          d_off;       /* Not an offset; see below */
+//     unsigned short d_reclen;    /* Length of this record */
+//     unsigned char  d_type;      /* Type of file; not supported by all filesystem types */
+//     char           d_name[256]; /* Null-terminated filename */
 //};
 
 //	type :
 //		file -> 8
 //		dir  -> 4
+
+
+
+// struct stat {
+//     dev_t     st_dev;      /* ID du périphérique contenant le fichier */
+//     ino_t     st_ino;      /* Numéro inœud */
+//     mode_t    st_mode;     /* Protection */
+//     nlink_t   st_nlink;    /* Nb liens matériels */
+//     uid_t     st_uid;      /* UID propriétaire */
+//     gid_t     st_gid;      /* GID propriétaire */
+//     dev_t     st_rdev;     /* ID périphérique (si fichier spécial) */
+//     off_t     st_size;     /* Taille totale en octets */
+//     blksize_t st_blksize;  /* Taille de bloc pour E/S */
+//     blkcnt_t  st_blocks;   /* Nombre de blocs alloués */
+//     time_t    st_atime;    /* Heure dernier accès */
+//     time_t    st_mtime;    /* Heure dernière modification */
+//     time_t    st_ctime;    /* Heure dernier changement état */
+// };
