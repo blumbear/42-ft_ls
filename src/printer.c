@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   printer.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/04/27 16:16:58 by tom               #+#    #+#             */
+/*   Updated: 2026/04/27 17:35:50 by tom              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ft_ls.h"
 
 void printLine(uint32_t flags_mask, struct filesData files) {
@@ -63,6 +75,38 @@ void printPerm(struct filesData file){
 	write(1, " ", 1);
 }
 
+void printUser(struct filesData file) {
+	struct passwd *pw = getpwuid(file.stat->st_uid);
+	if (pw != NULL) ft_printf("%s ", pw->pw_name);
+	else ft_printf("NULL ");
+}
+
+void printGroup(struct filesData file) {
+	struct group *pw = getgrgid(file.stat->st_gid);
+	if (pw != NULL) ft_printf("%s ", pw->gr_name);
+	else ft_printf("NULL ");
+}
+
+void printLink(struct filesData file) {
+	ft_printf("%d ", file.stat->st_nlink);
+}
+
+void printSize(struct filesData file) {
+	ft_printf("%d ", file.stat->st_size);
+}
+
+void printLastModification(struct filesData file) {
+	char *test = ctime(&file.stat->st_mtime);
+	test+=3;
+	test[13] = 0;
+	ft_printf("%s ", test);
+}
+
 void printLongFormat(struct filesData file) {
 	printPerm(file);
+	printLink(file);
+	printUser(file);
+	printGroup(file);
+	printSize(file);
+	printLastModification(file);
 }
