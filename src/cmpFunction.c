@@ -7,6 +7,13 @@ int	cmpSize(const void *a, const void *b) {
 	return res;
 }
 
+int	cmpTime(const void *a, const void *b) {
+	unsigned int res = ((struct filesData *)b)->stat->st_mtime - ((struct filesData *)a)->stat->st_mtime;
+	if (res == 0)
+		return cmpName(a, b);
+	return res;
+}
+
 int	cmpName(const void *a, const void *b) {
 	char *ca = ft_strdup(((struct filesData *)a)->name);
 	char *cb = ft_strdup(((struct filesData *)b)->name);

@@ -38,14 +38,19 @@ enum {
 	FLAG_D	 = 1u << 1,  /* -d : list directories themselves */
 	FLAG_G	 = 1u << 2,  /* -g : (unused / group) */
 	FLAG_L	 = 1u << 3,  /* -l : long format */
-	FLAG_R = 1u << 4,  /* -r : reverse sort */
 	FLAG_R_CAP = 1u << 5,  /* -R : recursive */
 	FLAG_S	 = 1u << 6,  /* -s : show block size */
-	FLAG_S_CAP = 1u << 7, /* -S : Sort by size */
+};
+
+enum {
+	FLAG_R = 1u << 0,  /* -r : reverse sort */
+	FLAG_S_CAP = 1u << 1, /* -S : Sort by size */
+	FLAG_T = 1u << 2, /* -t : sort by time, newest first*/
 };
 
 struct env {
-	uint32_t flags_mask;
+	uint64_t flags_mask;
+	uint64_t sort_flags_mask;
 	bool stat;
 };
 
@@ -65,10 +70,12 @@ static const uint32_t FLAG_MAP[256] = {
 	['R'] = FLAG_R_CAP,
 	['r'] = FLAG_R,
 	['S'] = FLAG_S_CAP,
+	['t'] = FLAG_T,
 };
 
 int	cmpName(const void *a, const void *b);
 int	cmpSize(const void *a, const void *b);
+int	cmpTime(const void *a, const void *b);
 
 
 /* main.c */
@@ -82,7 +89,7 @@ void	initfList(struct env *flags);
 void	printUser(struct filesData file);
 void	printLongFormat(struct filesData file);
 void	printLine(uint32_t flags_mask, struct filesData files);
-void	filesPrinter(struct filesData files[500], uint32_t flags_mask, int last, size_t size);
+void	filesPrinter(struct filesData files[500], struct env env, int last, size_t size);
 void	printPerm(struct filesData file);
 
 

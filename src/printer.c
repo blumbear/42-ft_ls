@@ -6,7 +6,7 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/27 16:16:58 by tom               #+#    #+#             */
-/*   Updated: 2026/04/27 17:45:15 by tom              ###   ########.fr       */
+/*   Updated: 2026/04/28 11:58:40 by tom              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,18 +103,18 @@ void printLine(uint32_t flags_mask, struct filesData files) {
 		write(1, "\n", 1);
 }
 
-void filesPrinter(struct filesData files[500], uint32_t flags_mask, int last, size_t size) {
-	if (flagIsSet(flags_mask, 'l') || flagIsSet(flags_mask, 's'))
+void filesPrinter(struct filesData files[500], struct env env, int last, size_t size) {
+	if (flagIsSet(env.flags_mask, 'l') || flagIsSet(env.flags_mask, 's'))
 		ft_printf("total %d\n", size);
-	if (flagIsSet(flags_mask, 'r')) {
+	if (flagIsSet(env.sort_flags_mask, 'r')) {
 		last--;
 		for (; last >= 0; last--){
-			printLine(flags_mask, files[last]);
+			printLine(env.flags_mask, files[last]);
 			if (files[last].stat) free(files[last].stat);
 		}
 	} else {
 		for (int k = 0; k < last; k++){
-			printLine(flags_mask, files[k]);
+			printLine(env.flags_mask, files[k]);
 			if (files[k].stat) free(files[k].stat);
 		}
 	}

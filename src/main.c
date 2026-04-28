@@ -6,15 +6,17 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/02 15:30:48 by tom               #+#    #+#             */
-/*   Updated: 2026/04/27 18:00:44 by tom              ###   ########.fr       */
+/*   Updated: 2026/04/28 12:53:50 by tom              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
 void sortFiles(struct filesData files[500], int k, struct env flags) {
-	if (flagIsSet(flags.flags_mask, 'S'))
+	if (flagIsSet(flags.sort_flags_mask, 'S'))
 		qsort(files, k, sizeof(struct filesData), cmpSize);
+	else if (flagIsSet(flags.sort_flags_mask, 't'))
+		qsort(files, k, sizeof(struct filesData), cmpTime);
 	else
 		qsort(files, k, sizeof(struct filesData), cmpName);
 
@@ -28,8 +30,11 @@ bool handleFlags(char *flags, struct env *tflags) {
 			ft_printf("ls: invalid option -- %c", c);
 			return false;
 		}
-		tflags->flags_mask |= m;
-		if (flags[i] == 'l' || flags[i] == 's' || flags[i] == 'S' || flags[i] == 'g')
+		if (c == 't' || c == 'S' || c == 'r')
+			tflags->sort_flags_mask |= m;
+		else
+			tflags->flags_mask |= m;
+		if (flags[i] == 'l' || flags[i] == 's' || flags[i] == 'S' || flags[i] == 'g' || flags[i] == 't')
 			tflags->stat = true;
 	}
 	return true;
@@ -37,6 +42,7 @@ bool handleFlags(char *flags, struct env *tflags) {
 
 void initfList(struct env *flags) {
 	flags->flags_mask = 0;
+	flags->sort_flags_mask = 0;
 	flags->stat = false;
 }
 
@@ -90,7 +96,7 @@ int main(int ac, char **av) {
 				k++;
 			}
 			sortFiles(files, k, flags);
-			filesPrinter(files, flags.flags_mask, k, size);
+			filesPrinter(files, flags, k, size);
 			putchar('\n');
 			if (to_open[i + 1] != NULL)
 				putchar('\n');
