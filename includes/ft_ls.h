@@ -89,7 +89,7 @@ void	initfList(struct env *flags);
 void	printUser(struct filesData file);
 void	printLongFormat(struct filesData file);
 void	printLine(uint32_t flags_mask, struct filesData files);
-void	filesPrinter(struct filesData files[500], struct env env, int last, size_t size);
+void	filesPrinter(struct filesData files[250], struct env env, int last, size_t size);
 void	printPerm(struct filesData file);
 
 

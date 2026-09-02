@@ -6,7 +6,7 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/27 16:16:58 by tom               #+#    #+#             */
-/*   Updated: 2026/04/28 11:58:40 by tom              ###   ########.fr       */
+/*   Updated: 2026/09/02 11:38:45 by tom              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,10 +67,10 @@ void printSize(struct filesData file) {
 }
 
 void printLastModification(struct filesData file) {
-	char *test = ctime(&file.stat->st_mtime);
-	test+=3;
-	test[13] = 0;
-	ft_printf("%s ", test);
+	char *lastUse = ctime(&file.stat->st_mtime);
+	lastUse += 3;
+	lastUse[13] = 0;
+	ft_printf("%s ", lastUse);
 }
 
 void printGroupFormat(struct filesData file) {
@@ -103,7 +103,7 @@ void printLine(uint32_t flags_mask, struct filesData files) {
 		write(1, "\n", 1);
 }
 
-void filesPrinter(struct filesData files[500], struct env env, int last, size_t size) {
+void filesPrinter(struct filesData files[250], struct env env, int last, size_t size) {
 	if (flagIsSet(env.flags_mask, 'l') || flagIsSet(env.flags_mask, 's'))
 		ft_printf("total %d\n", size);
 	if (flagIsSet(env.sort_flags_mask, 'r')) {
@@ -111,11 +111,13 @@ void filesPrinter(struct filesData files[500], struct env env, int last, size_t 
 		for (; last >= 0; last--){
 			printLine(env.flags_mask, files[last]);
 			if (files[last].stat) free(files[last].stat);
+			if (last % 6 == 0 && last != 0) putchar('\n');
 		}
 	} else {
 		for (int k = 0; k < last; k++){
 			printLine(env.flags_mask, files[k]);
 			if (files[k].stat) free(files[k].stat);
+			if (k % 6 == 0 && k != 0) putchar('\n');
 		}
 	}
 }

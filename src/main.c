@@ -6,13 +6,13 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/02 15:30:48 by tom               #+#    #+#             */
-/*   Updated: 2026/04/28 15:19:23 by tom              ###   ########.fr       */
+/*   Updated: 2026/09/02 11:24:22 by tom              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-void sortFiles(struct filesData files[500], int k, struct env flags) {
+void sortFiles(struct filesData files[250], int k, struct env flags) {
 	if (flagIsSet(flags.sort_flags_mask, 'S'))
 		qsort(files, k, sizeof(struct filesData), cmpSize);
 	else if (flagIsSet(flags.sort_flags_mask, 't'))
@@ -46,10 +46,11 @@ void initfList(struct env *flags) {
 	flags->stat = false;
 }
 
-void recursiveCompute(struct filesData file, bool format, struct env flags, char *path) {
+void recursiveCompute(struct filesData file, bool several_folder, struct env flags, char *path) {
 	DIR				*dirfile;
 	struct dirent	*readDir;
 	
+	(void)several_folder;
 	if (file.type == 4) {
 		path = ft_strjoin(path, "/");
 		path = ft_strjoin(path, file.name);
@@ -57,9 +58,10 @@ void recursiveCompute(struct filesData file, bool format, struct env flags, char
 	}
 	dirfile = opendir(path);
 	if (dirfile) {
-		struct filesData	files[500];
+		struct filesData	files[250];
 		int		k = 0;
 		size_t	size = 0;
+		ft_bzero(files, sizeof(files));
 
 		while ((readDir = readdir(dirfile)) != NULL) {
 			if (readDir->d_name[0] == '.' && !flagIsSet(flags.flags_mask, 'a'))
@@ -83,7 +85,7 @@ void recursiveCompute(struct filesData file, bool format, struct env flags, char
 		if (flagIsSet(flags.flags_mask, 'R')) {
 			for (int j = 0; files[j].type; j++) {
 				if (files[j].type == 4)
-					recursiveCompute(files[j], format, flags, path);
+					recursiveCompute(files[j], several_folder, flags, path);
 			}
 		}
 		closedir(dirfile);
@@ -93,17 +95,18 @@ void recursiveCompute(struct filesData file, bool format, struct env flags, char
 	}
 }
 
-void compute(char **to_open, bool format, struct env flags) {
+void compute(char **to_open, bool several_folder, struct env flags) {
 	DIR				*dirfile;
 	struct dirent	*readDir;
 	for (int i = 0; to_open[i]; i++) {
 		dirfile = opendir(to_open[i]);
 		if (dirfile) {
-			struct filesData	files[500];
+			struct filesData	files[250];
 			int		k = 0;
 			size_t	size = 0;
+			ft_bzero(files, sizeof(files));
 
-			if (format == true) ft_printf("%s:\n", to_open[i]);
+			if (several_folder == true) ft_printf("%s:\n", to_open[i]);
 			while ((readDir = readdir(dirfile)) != NULL) {
 				if (readDir->d_name[0] == '.' && !flagIsSet(flags.flags_mask, 'a'))
 					continue;
@@ -127,7 +130,7 @@ void compute(char **to_open, bool format, struct env flags) {
 			if (flagIsSet(flags.flags_mask, 'R')) {
 				for (int j = 0; files[j].type; j++) {
 					if (files[j].type == 4)
-						recursiveCompute(files[j], format, flags, to_open[i]);
+						recursiveCompute(files[j], several_folder, flags, to_open[i]);
 				}
 			}
 			closedir(dirfile);
@@ -156,8 +159,8 @@ int main(int ac, char **av) {
 			}
 		}
 	}
-	bool format = (j > 1) || flagIsSet(flags.flags_mask, 'R');
+	bool several_folder = (j > 1) || flagIsSet(flags.flags_mask, 'R');
 
-	compute(to_open, format, flags);
+	compute(to_open, several_folder, flags);
 	return EXIT_SUCCESS;
 }
