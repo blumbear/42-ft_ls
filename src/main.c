@@ -6,7 +6,7 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/02 15:30:48 by tom               #+#    #+#             */
-/*   Updated: 2026/09/02 11:24:22 by tom              ###   ########.fr       */
+/*   Updated: 2026/09/02 12:16:30 by tom              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,9 +95,36 @@ void recursiveCompute(struct filesData file, bool several_folder, struct env fla
 	}
 }
 
+void handle_d_flag(char **to_open,  uint64_t flags) {
+	struct stat sb;
+	struct filesData file;
+
+	for (int i = 0; to_open[i]; i++) {
+		if (stat(to_open[i], &sb) == 0)
+			continue;
+		else
+			ft_printf("ls: cannot access '%s': No such file or directory\n", to_open[i]);
+	}
+	for (int i = 0; to_open[i]; i++) {
+		if (stat(to_open[i], &sb) == 0){
+			strncpy(file.name, to_open[i], 255);
+			file.type = (S_ISDIR(sb.st_mode)) ? 4 : 8;
+			file.stat = &sb;
+			printLine(flags, file);
+		}
+	}
+	putchar('\n');
+}
+
 void compute(char **to_open, bool several_folder, struct env flags) {
 	DIR				*dirfile;
 	struct dirent	*readDir;
+
+	if (flagIsSet(flags.flags_mask, 'd')) {
+		handle_d_flag(to_open, flags.flags_mask);
+		return ;
+	}
+
 	for (int i = 0; to_open[i]; i++) {
 		dirfile = opendir(to_open[i]);
 		if (dirfile) {

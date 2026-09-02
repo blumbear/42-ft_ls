@@ -34,9 +34,14 @@ Examples:
 - `ft_ls -ltr` — long listing, sorted by modification time oldest-first (because `-r` reverses `-t`).
 - `ft_ls -R dir1 dir2` — recursively list `dir1` then `dir2`.
 
-## Notes
+## Implementation
 
-- This README documents the flags this project implements. For full `ls` behavior (locale handling, colorization, many GNU extensions), consult your system `ls` man page (`man ls`).
-- The implementation uses a compact bitmask representation for flags and a fast mapping from option character to bit; see `includes/ft_ls.h` for details.
-
-If you want this README translated to another language or extended with examples and build instructions, tell me which details to add.
+- [x] `-a` : Display all files, including hidden files
+- [x] `-d` : List directories themselves instead of their contents
+- [x] `-g` : Long format without owner information (BSD style)
+- [x] `-l` : Long format with permissions, links, owner, group, size, timestamp and filename
+- [x] `-s` : Display allocated size (in blocks) before each filename
+- [x] `-R` : Recursive directory traversal
+- [x] `-t` : Sort by modification date (newest first)
+- [x] `-r` : Reverse sort order
+- [x] `-S` : Sort by file size
