@@ -6,7 +6,7 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/02 15:30:48 by tom               #+#    #+#             */
-/*   Updated: 2026/09/08 19:09:57 by tom              ###   ########.fr       */
+/*   Updated: 2026/09/08 19:25:08 by tom              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ void recursiveCompute(struct filesData file, bool several_folder, struct env fla
 	DIR				*dirfile;
 	struct dirent	*readDir;
 	
-	(void)several_folder;
 	if (file.type == 4) {
 		path = ft_strjoin(path, "/");
 		path = ft_strjoin(path, file.name);
@@ -66,20 +65,33 @@ void recursiveCompute(struct filesData file, bool several_folder, struct env fla
 		ft_bzero(files, sizeof(files));
 
 		while ((readDir = readdir(dirfile)) != NULL) {
-			if (readDir->d_name[0] == '.' && !flagIsSet(flags.flags_mask, 'a'))
-				continue;
-			strncpy(files[k].name, readDir->d_name, 255);
-			files[k].name[255] = '\0';
-			files[k].type = readDir->d_type;
-			if (flags.stat) {
-				files[k].stat = malloc(sizeof(struct stat));
-				if (stat(files[k].name ,files[k].stat) != 0) {
-					break;
-				}
-				size += ((files[k].stat->st_blocks * 512 + 1023) / 1024);
-			} else files[k].stat = NULL;
-			k++;
-		}
+				if (readDir->d_name[0] == '.' && !flagIsSet(flags.flags_mask, 'a'))
+					continue;
+				strncpy(files[k].name, readDir->d_name, 255);
+				files[k].name[255] = '\0';
+				files[k].type = readDir->d_type;
+				if (flags.stat) {
+					files[k].stat = malloc(sizeof(struct stat));
+					if (stat(files[k].name ,files[k].stat) != 0) {
+						break;
+					}
+					size += ((files[k].stat->st_blocks * 512 + 1023) / 1024);
+					
+					if (flagIsSet(flags.flags_mask, 'l')) {
+						struct passwd *pw = getpwuid(files[k].stat->st_uid);
+						if (pw != NULL) files[k].owner = pw->pw_name;
+						else files[k].owner = NULL;
+					}
+					
+					if (flagIsSet(flags.flags_mask, 'g') || flagIsSet(flags.flags_mask, 'l')) {
+						struct group *gr = getgrgid(files[k].stat->st_gid);
+						if (gr != NULL) files[k].group = gr->gr_name;
+						else files[k].group = NULL;
+					}
+					
+				} else files[k].stat = NULL;
+				k++;
+			}
 		sortFiles(files, k, flags);
 		filesPrinter(files, flags, k, size);
 		putchar('\n');
