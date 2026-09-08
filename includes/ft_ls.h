@@ -33,6 +33,15 @@
 #define BOLD		"\x1b[1m"
 #define UNDERLINE	"\x1b[4m"
 
+struct column_max_widths {
+	int perm;
+	int links;
+	int owner;
+	int group;
+	int size;
+	int last_modification;
+};
+
 enum {
 	FLAG_A	 = 1u << 0,  /* -a : show hidden files */
 	FLAG_D	 = 1u << 1,  /* -d : list directories themselves */
@@ -58,6 +67,8 @@ struct filesData {
 	char			name[256];
 	unsigned char	type;
 	struct stat		*stat;
+	char 			*owner;
+	char 			*group;
 };
 
 
@@ -86,12 +97,15 @@ bool	handleFlags(char *flags, struct env *tflags);
 void	initfList(struct env *flags);
 
 /* printer.c */
-void	printUser(struct filesData file);
-void	printLongFormat(struct filesData file);
-void	printLine(uint32_t flags_mask, struct filesData files);
+void	printUser(struct filesData file, struct column_max_widths w);
+void	printLongFormat(struct filesData file, struct column_max_widths w);
+void	printLine(uint32_t flags_mask, struct filesData files, struct column_max_widths w);
 void	filesPrinter(struct filesData files[250], struct env env, int last, size_t size);
 void	printPerm(struct filesData file);
 
+/* printerUtils.c */
+int nbrlen(unsigned int n);
+struct column_max_widths calculate_widths(struct filesData files[], int last) ;
 
 //struct dirent {
 //     ino_t          d_ino;       /* Inode number */

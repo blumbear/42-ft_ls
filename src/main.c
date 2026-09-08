@@ -6,7 +6,7 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/02 15:30:48 by tom               #+#    #+#             */
-/*   Updated: 2026/09/02 12:16:30 by tom              ###   ########.fr       */
+/*   Updated: 2026/09/08 19:09:57 by tom              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ bool handleFlags(char *flags, struct env *tflags) {
 		unsigned char c = (unsigned char)flags[i];
 		uint32_t m = FLAG_MAP[c];
 		if (m == 0) {
-			ft_printf("ls: invalid option -- %c", c);
+			ft_putstr_fd("ls: invalid option -- ", 1);
+			ft_putchar_fd(c, 1);
 			return false;
 		}
 		if (c == 't' || c == 'S' || c == 'r')
@@ -54,7 +55,8 @@ void recursiveCompute(struct filesData file, bool several_folder, struct env fla
 	if (file.type == 4) {
 		path = ft_strjoin(path, "/");
 		path = ft_strjoin(path, file.name);
-		ft_printf("%s:\n", path);
+		ft_putstr_fd(path, 1);
+		ft_putstr_fd(":\n", 1);
 	}
 	dirfile = opendir(path);
 	if (dirfile) {
@@ -102,15 +104,20 @@ void handle_d_flag(char **to_open,  uint64_t flags) {
 	for (int i = 0; to_open[i]; i++) {
 		if (stat(to_open[i], &sb) == 0)
 			continue;
-		else
-			ft_printf("ls: cannot access '%s': No such file or directory\n", to_open[i]);
+		else {
+			ft_putstr_fd("ls: cannot access '", 1);
+			ft_putstr_fd(to_open[i], 1);
+			ft_putstr_fd("': No such file or directory\n", 1);
+			ft_putstr_fd(to_open[i], 1);
+		}
 	}
+	struct column_max_widths w = {10, 1, 0, 0, 0, 12};
 	for (int i = 0; to_open[i]; i++) {
 		if (stat(to_open[i], &sb) == 0){
 			strncpy(file.name, to_open[i], 255);
 			file.type = (S_ISDIR(sb.st_mode)) ? 4 : 8;
 			file.stat = &sb;
-			printLine(flags, file);
+			printLine(flags, file, w);
 		}
 	}
 	putchar('\n');
@@ -133,7 +140,10 @@ void compute(char **to_open, bool several_folder, struct env flags) {
 			size_t	size = 0;
 			ft_bzero(files, sizeof(files));
 
-			if (several_folder == true) ft_printf("%s:\n", to_open[i]);
+			if (several_folder == true) {
+				ft_putstr_fd(to_open[i], 1);
+				ft_putstr_fd(":\n", 1);
+			} 
 			while ((readDir = readdir(dirfile)) != NULL) {
 				if (readDir->d_name[0] == '.' && !flagIsSet(flags.flags_mask, 'a'))
 					continue;
@@ -146,6 +156,19 @@ void compute(char **to_open, bool several_folder, struct env flags) {
 						break;
 					}
 					size += ((files[k].stat->st_blocks * 512 + 1023) / 1024);
+					
+					if (flagIsSet(flags.flags_mask, 'l')) {
+						struct passwd *pw = getpwuid(files[k].stat->st_uid);
+						if (pw != NULL) files[k].owner = pw->pw_name;
+						else files[k].owner = NULL;
+					}
+					
+					if (flagIsSet(flags.flags_mask, 'g') || flagIsSet(flags.flags_mask, 'l')) {
+						struct group *gr = getgrgid(files[k].stat->st_gid);
+						if (gr != NULL) files[k].group = gr->gr_name;
+						else files[k].group = NULL;
+					}
+					
 				} else files[k].stat = NULL;
 				k++;
 			}
@@ -155,14 +178,23 @@ void compute(char **to_open, bool several_folder, struct env flags) {
 			if (to_open[i + 1] != NULL || flagIsSet(flags.flags_mask, 'R'))
 				putchar('\n');
 			if (flagIsSet(flags.flags_mask, 'R')) {
-				for (int j = 0; files[j].type; j++) {
-					if (files[j].type == 4)
-						recursiveCompute(files[j], several_folder, flags, to_open[i]);
+				if (flagIsSet(flags.sort_flags_mask, 'r')) {
+					for (int j = k; j > 0; j--) {
+						if (files[j].type == 4)
+							recursiveCompute(files[j], several_folder, flags, to_open[i]);
+					}
+				} else {
+					for (int j = 0; files[j].type; j++) {
+						if (files[j].type == 4)
+							recursiveCompute(files[j], several_folder, flags, to_open[i]);
+					}
 				}
 			}
 			closedir(dirfile);
 		} else {
-			ft_printf("ls: cannot access '%s': No such file or directory", to_open[i]);
+			ft_putstr_fd("ls: cannot access '", 1);
+			ft_putstr_fd(to_open[i], 1);
+			ft_putstr_fd("': No such file or directory\n", 1);
 		}
 	}
 }
