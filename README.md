@@ -21,6 +21,7 @@ The following options are supported by this implementation. The descriptions mat
 - `-t`  : Sort by modification time, newest entries first.
 - `-r`  : Reverse the sort order. Combine with `-t` to get oldest-first by time, or with other sorts to invert the order.
 - `-u`  : Use access time (instead of modification time) for sorting and/or display when combined with `-l` or `-t`. Behavior can depend on whether `-l` or `-t` are also provided.
+- `-S`  : Sort by file size, largest entries first.
 
 ## Combining flags
 
@@ -35,7 +36,7 @@ Examples:
 - `ft_ls -R dir1 dir2` — recursively list `dir1` then `dir2`.
 
 ## Implementation
-
+### Flags
 - [x] `-a` : Display all files, including hidden files
 - [x] `-d` : List directories themselves instead of their contents
 - [x] `-g` : Long format without owner information (BSD style)
@@ -45,3 +46,8 @@ Examples:
 - [x] `-t` : Sort by modification date (newest first)
 - [x] `-r` : Reverse sort order
 - [x] `-S` : Sort by file size
+
+### Features
+
+- [ ] Alignment without the long format flag
+- [x] Color coding for different file types (executables and directories)
