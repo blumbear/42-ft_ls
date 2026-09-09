@@ -6,7 +6,7 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/27 16:16:58 by tom               #+#    #+#             */
-/*   Updated: 2026/09/08 19:08:27 by tom              ###   ########.fr       */
+/*   Updated: 2026/09/09 17:58:26 by tom              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ void printLongFormat(struct filesData file, struct column_max_widths w) {
 	printLastModification(file);
 }
 
-void printLine(uint32_t flags_mask, struct filesData file, struct column_max_widths w) {
+void printLine(uint32_t flags_mask, struct filesData file, struct column_max_widths w, bool first) {
 	if (flagIsSet(flags_mask, 's')) {
 		ft_putchar_fd(' ', 1);
 		ft_putnbr_fd((file.stat->st_blocks * 512 + 1023) /1024, 1);
@@ -118,7 +118,8 @@ void printLine(uint32_t flags_mask, struct filesData file, struct column_max_wid
 	if (flagIsSet(flags_mask, 'g')) printGroupFormat(file, w);
 	else if (flagIsSet(flags_mask, 'l')) printLongFormat(file, w);
 
-	ft_putchar_fd(' ', 1);
+	if (!first)
+		ft_putchar_fd(' ', 1);
 	ft_putstr_fd(file.name, 1);
 
 	if (flagIsSet(flags_mask, 'l') || flagIsSet(flags_mask, 'g')) write(1, "\n", 1);
@@ -138,13 +139,13 @@ void filesPrinter(struct filesData files[250], struct env env, int last, size_t 
 	if (flagIsSet(env.sort_flags_mask, 'r')) {
 		last--;
 		for (; last >= 0; last--){
-			printLine(env.flags_mask, files[last], w);
+			printLine(env.flags_mask, files[last], w, ((size_t)last == size - 1));
 			if (files[last].stat) free(files[last].stat);
 
 		}
 	} else {
 		for (int k = 0; k < last; k++){
-			printLine(env.flags_mask, files[k], w);
+			printLine(env.flags_mask, files[k], w, (k == 0));
 			if (files[k].stat) free(files[k].stat);
 
 		}

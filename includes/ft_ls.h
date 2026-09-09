@@ -99,7 +99,7 @@ void	initfList(struct env *flags);
 /* printer.c */
 void	printUser(struct filesData file, struct column_max_widths w);
 void	printLongFormat(struct filesData file, struct column_max_widths w);
-void	printLine(uint32_t flags_mask, struct filesData files, struct column_max_widths w);
+void	printLine(uint32_t flags_mask, struct filesData files, struct column_max_widths w, bool first);
 void	filesPrinter(struct filesData files[250], struct env env, int last, size_t size);
 void	printPerm(struct filesData file);
 
