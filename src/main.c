@@ -6,7 +6,7 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/02 15:30:48 by tom               #+#    #+#             */
-/*   Updated: 2026/09/08 19:25:08 by tom              ###   ########.fr       */
+/*   Updated: 2026/09/09 18:19:02 by tom              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,7 @@ void handle_d_flag(char **to_open,  uint64_t flags) {
 			strncpy(file.name, to_open[i], 255);
 			file.type = (S_ISDIR(sb.st_mode)) ? 4 : 8;
 			file.stat = &sb;
-			printLine(flags, file, w);
+			printLine(flags, file, w, true);
 		}
 	}
 	putchar('\n');
@@ -162,26 +162,20 @@ void compute(char **to_open, bool several_folder, struct env flags) {
 				strncpy(files[k].name, readDir->d_name, 255);
 				files[k].name[255] = '\0';
 				files[k].type = readDir->d_type;
-				if (flags.stat) {
-					files[k].stat = malloc(sizeof(struct stat));
-					if (stat(files[k].name ,files[k].stat) != 0) {
-						break;
-					}
-					size += ((files[k].stat->st_blocks * 512 + 1023) / 1024);
-					
-					if (flagIsSet(flags.flags_mask, 'l')) {
-						struct passwd *pw = getpwuid(files[k].stat->st_uid);
-						if (pw != NULL) files[k].owner = pw->pw_name;
-						else files[k].owner = NULL;
-					}
-					
-					if (flagIsSet(flags.flags_mask, 'g') || flagIsSet(flags.flags_mask, 'l')) {
-						struct group *gr = getgrgid(files[k].stat->st_gid);
-						if (gr != NULL) files[k].group = gr->gr_name;
-						else files[k].group = NULL;
-					}
-					
-				} else files[k].stat = NULL;
+				files[k].stat = malloc(sizeof(struct stat));
+				if (stat(files[k].name ,files[k].stat) != 0)
+					break;
+				
+				size += ((files[k].stat->st_blocks * 512 + 1023) / 1024);
+				
+				struct passwd *pw = getpwuid(files[k].stat->st_uid);
+				if (pw != NULL) files[k].owner = pw->pw_name;
+				else files[k].owner = NULL;
+			
+				struct group *gr = getgrgid(files[k].stat->st_gid);
+				if (gr != NULL) files[k].group = gr->gr_name;
+				else files[k].group = NULL;
+
 				k++;
 			}
 			sortFiles(files, k, flags);
