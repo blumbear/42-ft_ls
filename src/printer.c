@@ -6,7 +6,7 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/27 16:16:58 by tom               #+#    #+#             */
-/*   Updated: 2026/09/09 18:19:20 by tom              ###   ########.fr       */
+/*   Updated: 2026/09/09 18:32:18 by tom              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,11 @@ void print_with_space(char *str){
 void handle_color(struct filesData file) {
 	if (file.type == 4) {
 		ft_putstr_fd(BLUE, 1);
+		ft_putstr_fd(BOLD, 1);
 	} 
 	else if (S_IXUSR & file.stat->st_mode) {
 		ft_putstr_fd(GREEN, 1);
+		ft_putstr_fd(BOLD, 1);
 	}
 	ft_putstr_fd(file.name, 1);
 	ft_putstr_fd(RESET, 1);
@@ -123,13 +125,14 @@ void printLongFormat(struct filesData file, struct column_max_widths w) {
 void printLine(uint32_t flags_mask, struct filesData file, struct column_max_widths w, bool first) {
 	if (flagIsSet(flags_mask, 's')) {
 		ft_putchar_fd(' ', 1);
+		ft_putchar_fd(' ', 1);
 		ft_putnbr_fd((file.stat->st_blocks * 512 + 1023) /1024, 1);
 	}
 
 	if (flagIsSet(flags_mask, 'g')) printGroupFormat(file, w);
 	else if (flagIsSet(flags_mask, 'l')) printLongFormat(file, w);
-	(void)first;
-	if (!first && !flagIsSet(flags_mask, 'l') && !flagIsSet(flags_mask, 'g'))
+	
+	if (!first || flagIsSet(flags_mask, 'l') || flagIsSet(flags_mask, 'g') || flagIsSet(flags_mask, 's'))
 		ft_putchar_fd(' ', 1);
 	handle_color(file);
 
