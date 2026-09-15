@@ -6,7 +6,7 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/02 15:30:48 by tom               #+#    #+#             */
-/*   Updated: 2026/09/09 18:19:02 by tom              ###   ########.fr       */
+/*   Updated: 2026/09/15 17:35:38 by tom              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ bool handleFlags(char *flags, struct env *tflags) {
 		if (m == 0) {
 			ft_putstr_fd("ls: invalid option -- ", 1);
 			ft_putchar_fd(c, 1);
+			ft_putchar_fd('\n', 1);
 			return false;
 		}
 		if (c == 't' || c == 'S' || c == 'r')
@@ -215,7 +216,7 @@ int main(int ac, char **av) {
 	to_open[1] = NULL;
 	if (ac > 1) {
 		for (int i = 1; i < ac; i++) {
-			if (av[i][0] == '-') {
+			if (av[i][0] == '-' && av[i][1] != ' ' && av[i][1] != 0) {
 				if (handleFlags(av[i], &flags) == false)
 					return EXIT_SUCCESS;
 			} else {
