@@ -100,8 +100,8 @@ void recursiveCompute(struct filesData file, bool several_folder, struct env fla
 		}
 		sortFiles(files, k, flags);
 		filesPrinter(files, flags, k, size);
-		putchar('\n');
-		putchar('\n');
+		ft_putchar_fd('\n', 1);
+		ft_putchar_fd('\n', 1);
 		for (int j = 0; files[j].type; j++) {
 			if (files[j].type == 4 && check_dot_entries(files[j].name))
 				recursiveCompute(files[j], several_folder, flags, path);
@@ -136,7 +136,7 @@ void handle_d_flag(char **to_open,  uint64_t flags) {
 			printLine(flags, file, w, true);
 		}
 	}
-	putchar('\n');
+	ft_putchar_fd('\n', 1);
 }
 
 void compute(char **to_open, bool several_folder, struct env flags) {
@@ -200,9 +200,9 @@ void compute(char **to_open, bool several_folder, struct env flags) {
 			}
 			sortFiles(files, k, flags);
 			filesPrinter(files, flags, k, size);
-			putchar('\n');
+			ft_putchar_fd('\n', 1);
 			if (to_open[i + 1] != NULL || flagIsSet(flags.flags_mask, 'R'))
-				putchar('\n');
+				ft_putchar_fd('\n', 1);
 			if (flagIsSet(flags.flags_mask, 'R')) {
 				if (flagIsSet(flags.sort_flags_mask, 'r')) {
 					for (int j = k; j > 0; j--) {
