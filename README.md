@@ -48,7 +48,7 @@ Examples:
 - [x] `-g` : Long format without owner information (BSD style)
 - [x] `-l` : Long format with permissions, links, owner, group, size, timestamp and filename
 - [x] `-s` : Display allocated size (in blocks) before each filename
-- [] `-R` : Recursive directory traversal
+- [x] `-R` : Recursive directory traversal
 - [x] `-t` : Sort by modification date (newest first)
 - [x] `-r` : Reverse sort order
 - [x] `-S` : Sort by file size
