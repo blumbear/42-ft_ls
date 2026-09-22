@@ -60,7 +60,6 @@ enum {
 struct env {
 	uint64_t flags_mask;
 	uint64_t sort_flags_mask;
-	bool stat;
 };
 
 struct filesData {
@@ -106,6 +105,11 @@ void	printPerm(struct filesData file);
 /* printerUtils.c */
 int nbrlen(unsigned int n);
 struct column_max_widths calculate_widths(struct filesData files[], int last) ;
+
+/* utils.c */
+char	*ft_strjoin_wf(char *s1, char *s2, int f);
+bool check_dot_entries(char *name);
+
 
 //struct dirent {
 //	ino_t			d_ino;			/* Inode number */

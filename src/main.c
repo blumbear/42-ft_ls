@@ -6,7 +6,7 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/02 15:30:48 by tom               #+#    #+#             */
-/*   Updated: 2026/09/15 17:35:38 by tom              ###   ########.fr       */
+/*   Updated: 2026/09/22 18:08:50 by tom              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,6 @@ bool handleFlags(char *flags, struct env *tflags) {
 			tflags->sort_flags_mask |= m;
 		else
 			tflags->flags_mask |= m;
-		if (flags[i] == 'l' || flags[i] == 's' || flags[i] == 'S' || flags[i] == 'g' || flags[i] == 't')
-			tflags->stat = true;
 	}
 	return true;
 }
@@ -45,19 +43,17 @@ bool handleFlags(char *flags, struct env *tflags) {
 void initfList(struct env *flags) {
 	flags->flags_mask = 0;
 	flags->sort_flags_mask = 0;
-	flags->stat = false;
 }
 
 void recursiveCompute(struct filesData file, bool several_folder, struct env flags, char *path) {
 	DIR				*dirfile;
 	struct dirent	*readDir;
+
+	path = ft_strjoin(path, "/");
+	path = ft_strjoin_wf(path, file.name, 1);
+	ft_putstr_fd(path, 1);
+	ft_putstr_fd(":\n", 1);
 	
-	if (file.type == 4) {
-		path = ft_strjoin(path, "/");
-		path = ft_strjoin(path, file.name);
-		ft_putstr_fd(path, 1);
-		ft_putstr_fd(":\n", 1);
-	}
 	dirfile = opendir(path);
 	if (dirfile) {
 		struct filesData	files[250];
@@ -66,45 +62,52 @@ void recursiveCompute(struct filesData file, bool several_folder, struct env fla
 		ft_bzero(files, sizeof(files));
 
 		while ((readDir = readdir(dirfile)) != NULL) {
-				if (readDir->d_name[0] == '.' && !flagIsSet(flags.flags_mask, 'a'))
-					continue;
-				strncpy(files[k].name, readDir->d_name, 255);
-				files[k].name[255] = '\0';
-				files[k].type = readDir->d_type;
-				if (flags.stat) {
-					files[k].stat = malloc(sizeof(struct stat));
-					if (stat(files[k].name ,files[k].stat) != 0) {
-						break;
-					}
-					size += ((files[k].stat->st_blocks * 512 + 1023) / 1024);
-					
-					if (flagIsSet(flags.flags_mask, 'l')) {
-						struct passwd *pw = getpwuid(files[k].stat->st_uid);
-						if (pw != NULL) files[k].owner = pw->pw_name;
-						else files[k].owner = NULL;
-					}
-					
-					if (flagIsSet(flags.flags_mask, 'g') || flagIsSet(flags.flags_mask, 'l')) {
-						struct group *gr = getgrgid(files[k].stat->st_gid);
-						if (gr != NULL) files[k].group = gr->gr_name;
-						else files[k].group = NULL;
-					}
-					
-				} else files[k].stat = NULL;
-				k++;
+			if (readDir->d_name[0] == '.' && !flagIsSet(flags.flags_mask, 'a'))
+				continue;
+			
+			strncpy(files[k].name, readDir->d_name, 255);
+			files[k].name[255] = 0;
+			files[k].type = readDir->d_type;
+			files[k].stat = malloc(sizeof(struct stat));
+			
+			if (file.name[0] != '.' && file.name[0] != 0) {
+				char *temp = ft_strjoin(file.name, "/");
+				temp = ft_strjoin_wf(temp, files[k].name, 1);
+				if (stat(temp ,files[k].stat) != 0) {
+					free(temp);
+					free(files[k].stat);
+					break;
+				}
+				free(temp);
+			} else {
+				if (stat(files[k].name ,files[k].stat) != 0) {
+					free(files[k].stat);
+					break;
+				}
 			}
+			
+			size += ((files[k].stat->st_blocks * 512 + 1023) / 1024);
+			
+			struct passwd *pw = getpwuid(files[k].stat->st_uid);
+			if (pw != NULL) files[k].owner = pw->pw_name;
+			else files[k].owner = NULL;
+		
+			struct group *gr = getgrgid(files[k].stat->st_gid);
+			if (gr != NULL) files[k].group = gr->gr_name;
+			else files[k].group = NULL;
+
+			k++;
+		}
 		sortFiles(files, k, flags);
 		filesPrinter(files, flags, k, size);
 		putchar('\n');
 		putchar('\n');
-		if (flagIsSet(flags.flags_mask, 'R')) {
-			for (int j = 0; files[j].type; j++) {
-				if (files[j].type == 4)
-					recursiveCompute(files[j], several_folder, flags, path);
-			}
+		for (int j = 0; files[j].type; j++) {
+			if (files[j].type == 4 && check_dot_entries(files[j].name))
+				recursiveCompute(files[j], several_folder, flags, path);
 		}
-		closedir(dirfile);
 		free(path);
+		closedir(dirfile);
 	} else {
 		return ;
 	}
@@ -156,16 +159,32 @@ void compute(char **to_open, bool several_folder, struct env flags) {
 			if (several_folder == true) {
 				ft_putstr_fd(to_open[i], 1);
 				ft_putstr_fd(":\n", 1);
-			} 
+			}
+			
 			while ((readDir = readdir(dirfile)) != NULL) {
 				if (readDir->d_name[0] == '.' && !flagIsSet(flags.flags_mask, 'a'))
 					continue;
+				
 				strncpy(files[k].name, readDir->d_name, 255);
-				files[k].name[255] = '\0';
+				files[k].name[255] = 0;
 				files[k].type = readDir->d_type;
 				files[k].stat = malloc(sizeof(struct stat));
-				if (stat(files[k].name ,files[k].stat) != 0)
-					break;
+				
+				if (to_open[i][0] != '.' && to_open[i][1] != 0) {
+					char *temp = ft_strjoin(to_open[i], "/");
+					temp = ft_strjoin_wf(temp, files[k].name, 1);
+					if (stat(temp ,files[k].stat) != 0) {
+						free(temp);
+						free(files[k].stat);
+						break;
+					}
+					free(temp);
+				} else {
+					if (stat(files[k].name ,files[k].stat) != 0) {
+						free(files[k].stat);
+						break;
+					}
+				}
 				
 				size += ((files[k].stat->st_blocks * 512 + 1023) / 1024);
 				
@@ -212,8 +231,10 @@ int main(int ac, char **av) {
 	int				j = 0;
 
 	initfList(&flags);
+
 	to_open[0] = ".";
 	to_open[1] = NULL;
+	
 	if (ac > 1) {
 		for (int i = 1; i < ac; i++) {
 			if (av[i][0] == '-' && av[i][1] != ' ' && av[i][1] != 0) {
@@ -225,8 +246,10 @@ int main(int ac, char **av) {
 			}
 		}
 	}
+	
 	bool several_folder = (j > 1) || flagIsSet(flags.flags_mask, 'R');
 
 	compute(to_open, several_folder, flags);
+	
 	return EXIT_SUCCESS;
 }

@@ -6,7 +6,7 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/27 16:16:58 by tom               #+#    #+#             */
-/*   Updated: 2026/09/09 18:32:18 by tom              ###   ########.fr       */
+/*   Updated: 2026/09/22 17:50:52 by tom              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,6 +137,9 @@ void printLine(uint32_t flags_mask, struct filesData file, struct column_max_wid
 	handle_color(file);
 
 	if (flagIsSet(flags_mask, 'l') || flagIsSet(flags_mask, 'g')) write(1, "\n", 1);
+
+	if (file.stat) free(file.stat);
+
 }
 
 void filesPrinter(struct filesData files[250], struct env env, int last, size_t size) {
@@ -152,16 +155,10 @@ void filesPrinter(struct filesData files[250], struct env env, int last, size_t 
 
 	if (flagIsSet(env.sort_flags_mask, 'r')) {
 		last--;
-		for (; last >= 0; last--){
+		for (; last >= 0; last--)
 			printLine(env.flags_mask, files[last], w, ((size_t)last == size - 1));
-			if (files[last].stat) free(files[last].stat);
-
-		}
 	} else {
-		for (int k = 0; k < last; k++){
+		for (int k = 0; k < last; k++)
 			printLine(env.flags_mask, files[k], w, (k == 0));
-			if (files[k].stat) free(files[k].stat);
-
-		}
 	}
 }
