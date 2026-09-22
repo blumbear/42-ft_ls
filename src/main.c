@@ -6,7 +6,7 @@
 /*   By: tom <tom@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/02 15:30:48 by tom               #+#    #+#             */
-/*   Updated: 2026/09/22 18:08:50 by tom              ###   ########.fr       */
+/*   Updated: 2026/09/22 18:28:08 by tom              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ void recursiveCompute(struct filesData file, bool several_folder, struct env fla
 			files[k].stat = malloc(sizeof(struct stat));
 			
 			if (file.name[0] != '.' && file.name[0] != 0) {
-				char *temp = ft_strjoin(file.name, "/");
+				char *temp = ft_strjoin(path, "/");
 				temp = ft_strjoin_wf(temp, files[k].name, 1);
 				if (stat(temp ,files[k].stat) != 0) {
 					free(temp);
