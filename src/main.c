@@ -45,6 +45,16 @@ void initfList(struct env *flags) {
 	flags->sort_flags_mask = 0;
 }
 
+void set_file_pw_gr(struct filesData *file) {
+	struct passwd *pw = getpwuid(file->stat->st_uid);
+	if (pw != NULL) file->owner = pw->pw_name;
+	else file->owner = NULL;
+
+	struct group *gr = getgrgid(file->stat->st_gid);
+	if (gr != NULL) file->group = gr->gr_name;
+	else file->group = NULL;
+}
+
 void recursiveCompute(struct filesData file, bool several_folder, struct env flags, char *path) {
 	DIR				*dirfile;
 	struct dirent	*readDir;
@@ -87,15 +97,7 @@ void recursiveCompute(struct filesData file, bool several_folder, struct env fla
 			}
 			
 			size += ((files[k].stat->st_blocks * 512 + 1023) / 1024);
-			
-			struct passwd *pw = getpwuid(files[k].stat->st_uid);
-			if (pw != NULL) files[k].owner = pw->pw_name;
-			else files[k].owner = NULL;
-		
-			struct group *gr = getgrgid(files[k].stat->st_gid);
-			if (gr != NULL) files[k].group = gr->gr_name;
-			else files[k].group = NULL;
-
+			set_file_pw_gr(&files[k]);
 			k++;
 		}
 		sortFiles(files, k, flags);
@@ -124,16 +126,20 @@ void handle_d_flag(char **to_open,  uint64_t flags) {
 			ft_putstr_fd("ls: cannot access '", 1);
 			ft_putstr_fd(to_open[i], 1);
 			ft_putstr_fd("': No such file or directory\n", 1);
-			ft_putstr_fd(to_open[i], 1);
+			to_open[i] = "";
 		}
 	}
 	struct column_max_widths w = {10, 1, 0, 0, 0, 12};
 	for (int i = 0; to_open[i]; i++) {
+		strncpy(file.name, to_open[i], 255);
+		file.stat = malloc(sizeof(struct stat));
 		if (stat(to_open[i], &sb) == 0){
-			strncpy(file.name, to_open[i], 255);
 			file.type = (S_ISDIR(sb.st_mode)) ? 4 : 8;
 			file.stat = &sb;
+			set_file_pw_gr(&file);
 			printLine(flags, file, w, true);
+			if (to_open[i + 1] != NULL)
+				ft_putchar_fd(' ', 1);
 		}
 	}
 	ft_putchar_fd('\n', 1);
@@ -187,15 +193,7 @@ void compute(char **to_open, bool several_folder, struct env flags) {
 				}
 				
 				size += ((files[k].stat->st_blocks * 512 + 1023) / 1024);
-				
-				struct passwd *pw = getpwuid(files[k].stat->st_uid);
-				if (pw != NULL) files[k].owner = pw->pw_name;
-				else files[k].owner = NULL;
-			
-				struct group *gr = getgrgid(files[k].stat->st_gid);
-				if (gr != NULL) files[k].group = gr->gr_name;
-				else files[k].group = NULL;
-
+				set_file_pw_gr(&files[k]);
 				k++;
 			}
 			sortFiles(files, k, flags);

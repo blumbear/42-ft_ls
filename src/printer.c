@@ -124,9 +124,8 @@ void printLongFormat(struct filesData file, struct column_max_widths w) {
 
 void printLine(uint32_t flags_mask, struct filesData file, struct column_max_widths w, bool first) {
 	if (flagIsSet(flags_mask, 's')) {
-		ft_putchar_fd(' ', 1);
-		ft_putchar_fd(' ', 1);
 		ft_putnbr_fd((file.stat->st_blocks * 512 + 1023) /1024, 1);
+		ft_putchar_fd(' ', 1);
 	}
 
 	if (flagIsSet(flags_mask, 'g')) printGroupFormat(file, w);
@@ -138,7 +137,7 @@ void printLine(uint32_t flags_mask, struct filesData file, struct column_max_wid
 
 	if (flagIsSet(flags_mask, 'l') || flagIsSet(flags_mask, 'g')) write(1, "\n", 1);
 
-	if (file.stat) free(file.stat);
+	if (file.stat && !flagIsSet(flags_mask, 'd')) free(file.stat);
 
 }
 

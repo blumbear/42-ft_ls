@@ -43,15 +43,15 @@ Examples:
 - [x] 'directories': Display all files in a 'directories'
 
 ### Flags
-- [x] `-a` : Display all files, including hidden files
+- [] `-a` : Display all files, including hidden files (. come after ..)
 - [x] `-d` : List directories themselves instead of their contents
 - [x] `-g` : Long format without owner information (BSD style)
 - [x] `-l` : Long format with permissions, links, owner, group, size, timestamp and filename
-- [x] `-s` : Display allocated size (in blocks) before each filename
-- [x] `-R` : Recursive directory traversal
-- [x] `-t` : Sort by modification date (newest first)
-- [x] `-r` : Reverse sort order
-- [x] `-S` : Sort by file size
+- [] `-s` : Display allocated size (in blocks) before each filename
+- [] `-R` : Recursive directory traversal
+- [] `-t` : Sort by modification date (newest first)
+- [] `-r` : Reverse sort order
+- [] `-S` : Sort by file size
 
 ### Features
 
