@@ -8,9 +8,13 @@ int	cmpSize(const void *a, const void *b) {
 }
 
 int	cmpTime(const void *a, const void *b) {
-	unsigned int res = ((struct filesData *)b)->stat->st_mtime - ((struct filesData *)a)->stat->st_mtime;
-	if (res == 0)
-		return cmpName(a, b);
+	unsigned int res = ((struct filesData *)b)->stat->st_mtim.tv_sec - ((struct filesData *)a)->stat->st_mtim.tv_sec;
+	if (res == 0) {
+		unsigned int res = ((struct filesData *)b)->stat->st_mtim.tv_nsec - ((struct filesData *)a)->stat->st_mtim.tv_nsec;
+		if (res == 0)
+			return cmpName(a, b);
+		return res;
+	}
 	return res;
 }
 
