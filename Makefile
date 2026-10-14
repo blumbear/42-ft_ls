@@ -4,7 +4,7 @@ CC = cc
 CFLAGS = -Wall -Wextra -Werror -Iincludes
 LFLAGS = -lft -L./libft
 
-FILES = printer cmpFunction main printerUtils utils
+FILES = printer cmpFunction main printerUtils utils ft_qsort
 
 LIBFT = libft/libft.a
 

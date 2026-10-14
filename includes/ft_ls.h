@@ -110,6 +110,8 @@ struct column_max_widths calculate_widths(struct filesData files[], int last) ;
 char	*ft_strjoin_wf(char *s1, char *s2, int f);
 bool check_dot_entries(char *name);
 
+/* ft_qsort.c */
+void ft_qsort(void *base, size_t nmemb, size_t size, int (*compar)(const void *, const void *));
 
 //struct dirent {
 //	ino_t			d_ino;			/* Inode number */

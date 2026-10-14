@@ -14,11 +14,11 @@
 
 void sortFiles(struct filesData files[250], int k, struct env flags) {
 	if (flagIsSet(flags.sort_flags_mask, 'S'))
-		qsort(files, k, sizeof(struct filesData), cmpSize);
+		ft_qsort(files, k, sizeof(struct filesData), cmpSize);
 	else if (flagIsSet(flags.sort_flags_mask, 't'))
-		qsort(files, k, sizeof(struct filesData), cmpTime);
+		ft_qsort(files, k, sizeof(struct filesData), cmpTime);
 	else
-		qsort(files, k, sizeof(struct filesData), cmpName);
+		ft_qsort(files, k, sizeof(struct filesData), cmpName);
 
 }
 
