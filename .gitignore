@@ -3,3 +3,4 @@ obj/
 *.o
 libft/obj
 libft/libft.a
+vgcore.*
