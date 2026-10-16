@@ -21,13 +21,18 @@ int nbrlen(unsigned int n) {
 	return res;
 }
 
-struct column_max_widths calculate_widths(struct filesData files[], int last) {
-	struct column_max_widths w = {10, 0, 0, 0, 0, 12};
+struct column_max_widths calculate_widths(struct filesData files[], int last, uint64_t flags_mask) {
+	struct column_max_widths w = {0,10, 0, 0, 0, 0, 12};
 	
 	for (int i = 0; i < last; i++) {
 		if (!files[i].stat)
 			continue;
 		
+		if (flagIsSet(flags_mask, 's')) {
+			int s_flag = nbrlen((files[i].stat->st_blocks * 512 + 1023) /1024);
+			if (s_flag > w.s_flag) w.s_flag = s_flag;
+		}
+
 		int links_len = nbrlen(files[i].stat->st_nlink);
 		if (links_len > w.links) w.links = links_len;
 

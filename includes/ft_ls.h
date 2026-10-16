@@ -34,6 +34,7 @@
 #define UNDERLINE	"\x1b[4m"
 
 struct column_max_widths {
+	int s_flag;
 	int perm;
 	int links;
 	int owner;
@@ -83,10 +84,12 @@ static const uint32_t FLAG_MAP[256] = {
 	['t'] = FLAG_T,
 };
 
+
+/* cmpFunction.c */
 int	cmpName(const void *a, const void *b);
 int	cmpSize(const void *a, const void *b);
 int	cmpTime(const void *a, const void *b);
-
+int to_open_cmp(const void *a, const void *b);
 
 /* main.c */
 static inline int flagIsSet(uint32_t mask, unsigned char c) {
@@ -104,7 +107,7 @@ void	printPerm(struct filesData file);
 
 /* printerUtils.c */
 int nbrlen(unsigned int n);
-struct column_max_widths calculate_widths(struct filesData files[], int last) ;
+struct column_max_widths calculate_widths(struct filesData files[], int last, uint64_t flags_mask) ;
 
 /* utils.c */
 char	*ft_strjoin_wf(char *s1, char *s2, int f);

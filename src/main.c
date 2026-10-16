@@ -129,7 +129,7 @@ void handle_d_flag(char **to_open,  uint64_t flags) {
 			to_open[i] = "";
 		}
 	}
-	struct column_max_widths w = {10, 1, 0, 0, 0, 12};
+	struct column_max_widths w = {0, 10, 1, 0, 0, 0, 12};
 	for (int i = 0; to_open[i]; i++) {
 		strncpy(file.name, to_open[i], 255);
 		file.stat = malloc(sizeof(struct stat));
@@ -248,6 +248,6 @@ int main(int ac, char **av) {
 	bool several_folder = (j > 1) || flagIsSet(flags.flags_mask, 'R');
 
 	compute(to_open, several_folder, flags);
-	
+	ft_printf("REGLER LE PB DE LS -A, LS -LS, ET LS TEST TESTB(doit les trier avant de lancer le reste)");
 	return EXIT_SUCCESS;
 }

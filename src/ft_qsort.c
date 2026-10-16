@@ -12,8 +12,7 @@ static void swap_bytes(char *a, char *b, size_t size)
     }
 }
 
-void ft_qsort(void *base, size_t nmemb, size_t size,
-              int (*compar)(const void *, const void *))
+void ft_qsort(void *base, size_t nmemb, size_t size, int (*compar)(const void *, const void *))
 {
     char    *arr;
     size_t  i;
