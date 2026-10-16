@@ -250,6 +250,5 @@ int main(int ac, char **av) {
 		ft_qsort((void *)to_open, j, sizeof(char *), cmpNameMain);
 	}
 	compute(to_open, several_folder, flags);
-	ft_printf("REGLER LE PB DE LS -A, ET LS TEST TESTB(doit les trier avant de lancer le reste)\n");
 	return EXIT_SUCCESS;
 }

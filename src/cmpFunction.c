@@ -19,32 +19,39 @@ int	cmpTime(const void *a, const void *b) {
 }
 
 int	cmpName(const void *a, const void *b) {
+	const char *fa = ((const struct filesData *)a)->name;
+    const char *fb = ((const struct filesData *)b)->name;
+    const char *na = fa;
+    const char *nb = fb;
 
-	char *na = ((struct filesData *)a)->name;
-	char *nb = ((struct filesData *)b)->name;
-
-	while (*na == '.') na++;
-	while (*nb == '.') nb++;
-	while (*na && tolower((unsigned char)*na) == tolower((unsigned char)*nb))
+    while (*na == '.') na++;
+    while (*nb == '.') nb++;
+    while (*na && tolower((unsigned char)*na) == tolower((unsigned char)*nb))
     {
         na++;
         nb++;
     }
-	
-	return tolower((unsigned char)*na) - tolower((unsigned char)*nb);
+    int diff = tolower((unsigned char)*na) - tolower((unsigned char)*nb);
+    if (diff != 0)
+        return diff;
+    return ft_strncmp(fa, fb, 256);
 }
 
 int cmpNameMain(const void *a, const void *b) {
-	char *na = *(char * const *)a;
-	char *nb = *(char * const *)b;
+	const char *fa = ((const struct filesData *)a)->name;
+    const char *fb = ((const struct filesData *)b)->name;
+    const char *na = fa;
+    const char *nb = fb;
 
-	while (*na == '.') na++;
-	while (*nb == '.') nb++;
-	while (*na && tolower((unsigned char)*na) == tolower((unsigned char)*nb))
+    while (*na == '.') na++;
+    while (*nb == '.') nb++;
+    while (*na && tolower((unsigned char)*na) == tolower((unsigned char)*nb))
     {
         na++;
         nb++;
     }
-
-	return tolower((unsigned char)*na) - tolower((unsigned char)*nb);
+    int diff = tolower((unsigned char)*na) - tolower((unsigned char)*nb);
+    if (diff != 0)
+        return diff;
+    return ft_strncmp(fa, fb, 256);
 }
