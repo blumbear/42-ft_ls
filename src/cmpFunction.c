@@ -38,8 +38,8 @@ int	cmpName(const void *a, const void *b) {
 }
 
 int cmpNameMain(const void *a, const void *b) {
-	const char *fa = ((const struct filesData *)a)->name;
-    const char *fb = ((const struct filesData *)b)->name;
+	const char *fa = (*(char * const *)a);
+    const char *fb = (*(char * const *)b);
     const char *na = fa;
     const char *nb = fb;
 

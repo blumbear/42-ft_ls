@@ -171,12 +171,16 @@ void compute(char **to_open, bool several_folder, struct env flags) {
 				if (readDir->d_name[0] == '.' && !flagIsSet(flags.flags_mask, 'a'))
 					continue;
 				
-				strncpy(files[k].name, readDir->d_name, 255);
+				ft_strlcpy(files[k].name, readDir->d_name, 255);
 				files[k].name[255] = 0;
 				files[k].type = readDir->d_type;
 				files[k].stat = malloc(sizeof(struct stat));
-				
-				if (to_open[i][0] != '.' && to_open[i][1] != 0) {
+				if (to_open[i][0] == '.' && to_open[i][1] == 0) {
+					if (stat(files[k].name ,files[k].stat) != 0) {
+						free(files[k].stat);
+						break;
+					}
+				} else {
 					char *temp = ft_strjoin(to_open[i], "/");
 					temp = ft_strjoin_wf(temp, files[k].name, 1);
 					if (stat(temp ,files[k].stat) != 0) {
@@ -185,11 +189,6 @@ void compute(char **to_open, bool several_folder, struct env flags) {
 						break;
 					}
 					free(temp);
-				} else {
-					if (stat(files[k].name ,files[k].stat) != 0) {
-						free(files[k].stat);
-						break;
-					}
 				}
 				
 				size += ((files[k].stat->st_blocks * 512 + 1023) / 1024);
