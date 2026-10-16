@@ -19,21 +19,32 @@ int	cmpTime(const void *a, const void *b) {
 }
 
 int	cmpName(const void *a, const void *b) {
-	char *ca = ft_strdup(((struct filesData *)a)->name);
-	char *cb = ft_strdup(((struct filesData *)b)->name);
 
-	char *na = ca;
-	char *nb = cb;
+	char *na = ((struct filesData *)a)->name;
+	char *nb = ((struct filesData *)b)->name;
+
 	while (*na == '.') na++;
 	while (*nb == '.') nb++;
-
-	for (int i = 0; na[i]; i++) na[i] = tolower(na[i]);
-	for (int i = 0; nb[i]; i++) nb[i] = tolower(nb[i]);
+	while (*na && tolower((unsigned char)*na) == tolower((unsigned char)*nb))
+    {
+        na++;
+        nb++;
+    }
 	
-	int res = ft_strncmp(na, nb, 256);
+	return tolower((unsigned char)*na) - tolower((unsigned char)*nb);
+}
 
-	free(ca);
-	free(cb);
+int cmpNameMain(const void *a, const void *b) {
+	char *na = *(char * const *)a;
+	char *nb = *(char * const *)b;
 
-	return res;
+	while (*na == '.') na++;
+	while (*nb == '.') nb++;
+	while (*na && tolower((unsigned char)*na) == tolower((unsigned char)*nb))
+    {
+        na++;
+        nb++;
+    }
+
+	return tolower((unsigned char)*na) - tolower((unsigned char)*nb);
 }

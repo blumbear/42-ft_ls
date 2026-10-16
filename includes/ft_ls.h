@@ -89,7 +89,7 @@ static const uint32_t FLAG_MAP[256] = {
 int	cmpName(const void *a, const void *b);
 int	cmpSize(const void *a, const void *b);
 int	cmpTime(const void *a, const void *b);
-int to_open_cmp(const void *a, const void *b);
+int cmpNameMain(const void *a, const void *b);
 
 /* main.c */
 static inline int flagIsSet(uint32_t mask, unsigned char c) {

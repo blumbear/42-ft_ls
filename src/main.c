@@ -246,8 +246,10 @@ int main(int ac, char **av) {
 	}
 	
 	bool several_folder = (j > 1) || flagIsSet(flags.flags_mask, 'R');
-
+	if (to_open[1] != NULL) {
+		ft_qsort((void *)to_open, j, sizeof(char *), cmpNameMain);
+	}
 	compute(to_open, several_folder, flags);
-	ft_printf("REGLER LE PB DE LS -A, ET LS TEST TESTB(doit les trier avant de lancer le reste)");
+	ft_printf("REGLER LE PB DE LS -A, ET LS TEST TESTB(doit les trier avant de lancer le reste)\n");
 	return EXIT_SUCCESS;
 }
