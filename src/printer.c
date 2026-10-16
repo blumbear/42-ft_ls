@@ -124,7 +124,10 @@ void printLongFormat(struct filesData file, struct column_max_widths w) {
 
 void printLine(uint32_t flags_mask, struct filesData file, struct column_max_widths w, bool first) {
 	if (flagIsSet(flags_mask, 's')) {
-		for (int i = 0; i < w.s_flag - nbrlen((file.stat->st_blocks * 512 + 1023) /1024) ;i++) ft_putchar_fd(' ', 1);
+		if (flagIsSet(flags_mask, 'l') || flagIsSet(flags_mask, 'g'))
+			for (int i = 0; i < w.s_flag - nbrlen((file.stat->st_blocks * 512 + 1023) /1024) ;i++) ft_putchar_fd(' ', 1);
+		else 
+			ft_putstr_fd("  ", 1);
 		ft_putnbr_fd((file.stat->st_blocks * 512 + 1023) /1024, 1);
 		ft_putchar_fd(' ', 1);
 	}
