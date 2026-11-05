@@ -4,3 +4,5 @@ obj/
 libft/obj
 libft/libft.a
 vgcore.*
+.gdb_history
+test
