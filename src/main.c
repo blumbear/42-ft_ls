@@ -182,12 +182,10 @@ void compute(char **to_open, bool several_folder, struct env flags) {
 							break;
 						}
 						files[k].link = ft_calloc(1, files[k].stat->st_size + 1);
-						int len = readlink(files[k].name, files[k].link, files[k].stat->st_size + 1);
-						if (len == -1) {
+						if (readlink(files[k].name, files[k].link, files[k].stat->st_size + 1) == -1) {
 							free(files[k].link);
 							break;
 						}
-						files[k].link[len] = '\0';
 					} else if (stat(files[k].name ,files[k].stat) != 0) {
 						free(files[k].stat);
 						break;
@@ -202,7 +200,8 @@ void compute(char **to_open, bool several_folder, struct env flags) {
 							break;
 						}
 						files[k].link = ft_calloc(1, files[k].stat->st_size + 1);
-						if (readlink(temp, files[k].link, files[k].stat->st_size + 1)) {
+						if (readlink(temp, files[k].link, files[k].stat->st_size + 1) == 1) {
+							free(files[k].link);
 							break;
 						}
 					} else if (stat(temp ,files[k].stat) != 0) {
