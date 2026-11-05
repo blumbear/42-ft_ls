@@ -69,6 +69,7 @@ struct filesData {
 	struct stat		*stat;
 	char 			*owner;
 	char 			*group;
+	char			*link;
 };
 
 
@@ -125,8 +126,9 @@ void ft_qsort(void *base, size_t nmemb, size_t size, int (*compar)(const void *,
 //};
 
 //	type :
-//		file -> 8
-//		dir  -> 4
+//		file -> DT_DIR
+//		dir  -> DT_REG
+//		symlink -> DT_LNK
 
 
 

@@ -105,7 +105,7 @@ void recursiveCompute(struct filesData file, bool several_folder, struct env fla
 		ft_putchar_fd('\n', 1);
 		ft_putchar_fd('\n', 1);
 		for (int j = 0; files[j].type; j++) {
-			if (files[j].type == 4 && check_dot_entries(files[j].name))
+			if (files[j].type == DT_REG && check_dot_entries(files[j].name))
 				recursiveCompute(files[j], several_folder, flags, path);
 		}
 		free(path);
@@ -176,14 +176,36 @@ void compute(char **to_open, bool several_folder, struct env flags) {
 				files[k].type = readDir->d_type;
 				files[k].stat = malloc(sizeof(struct stat));
 				if (to_open[i][0] == '.' && to_open[i][1] == 0) {
-					if (stat(files[k].name ,files[k].stat) != 0) {
+					if (files[k].type == DT_LNK) {
+						if (lstat(files[k].name ,files[k].stat) != 0){
+							free((files[k].stat));
+							break;
+						}
+						files[k].link = ft_calloc(1, files[k].stat->st_size + 1);
+						int len = readlink(files[k].name, files[k].link, files[k].stat->st_size + 1);
+						if (len == -1) {
+							free(files[k].link);
+							break;
+						}
+						files[k].link[len] = '\0';
+					} else if (stat(files[k].name ,files[k].stat) != 0) {
 						free(files[k].stat);
 						break;
 					}
 				} else {
 					char *temp = ft_strjoin(to_open[i], "/");
 					temp = ft_strjoin_wf(temp, files[k].name, 1);
-					if (stat(temp ,files[k].stat) != 0) {
+					if (files[k].type == DT_LNK) {
+						if (lstat(temp ,files[k].stat) != 0){
+							free(temp);
+							free(files[k].stat);
+							break;
+						}
+						files[k].link = ft_calloc(1, files[k].stat->st_size + 1);
+						if (readlink(temp, files[k].link, files[k].stat->st_size + 1)) {
+							break;
+						}
+					} else if (stat(temp ,files[k].stat) != 0) {
 						free(temp);
 						free(files[k].stat);
 						break;
@@ -203,12 +225,12 @@ void compute(char **to_open, bool several_folder, struct env flags) {
 			if (flagIsSet(flags.flags_mask, 'R')) {
 				if (flagIsSet(flags.sort_flags_mask, 'r')) {
 					for (int j = k; j > 0; j--) {
-						if (files[j].type == 4)
+						if (files[j].type == DT_REG)
 							recursiveCompute(files[j], several_folder, flags, to_open[i]);
 					}
 				} else {
 					for (int j = 0; files[j].type; j++) {
-						if (files[j].type == 4)
+						if (files[j].type == DT_REG)
 							recursiveCompute(files[j], several_folder, flags, to_open[i]);
 					}
 				}

@@ -18,11 +18,13 @@ void print_with_space(char *str){
 }
 
 void handle_color(struct filesData file) {
-	if (file.type == 4) {
+	if (file.type == DT_DIR) {
 		ft_putstr_fd(BLUE, 1);
 		ft_putstr_fd(BOLD, 1);
-	} 
-	else if (S_IXUSR & file.stat->st_mode) {
+	} else if (file.type == DT_LNK){
+		ft_putstr_fd(CYAN, 1);
+		ft_putstr_fd(BOLD, 1);
+	} else if (S_IXUSR & file.stat->st_mode) {
 		ft_putstr_fd(GREEN, 1);
 		ft_putstr_fd(BOLD, 1);
 	}
@@ -31,7 +33,7 @@ void handle_color(struct filesData file) {
 }
 
 void printPerm(struct filesData file){
-	if (file.type == 4) write(1, "d", 1);
+	if (file.type == DT_REG) write(1, "d", 1);
 	else write(1, "-", 1);
 	
 	if (S_IRUSR & file.stat->st_mode) write(1, "r", 1);
@@ -90,6 +92,13 @@ void printLastModification(struct filesData file) {
 	ft_putchar_fd(' ', 1);
 }
 
+void printSymlink(struct filesData file) {
+	handle_color(file);
+	ft_putstr_fd(" -> ", 1);
+	ft_putstr_fd(file.link, 1);
+	free(file.link);
+}
+
 void printGroupFormat(struct filesData file, struct column_max_widths w) {
 	printPerm(file);
 	for (int i = -1; i < w.links - nbrlen(file.stat->st_nlink) ;i++) ft_putchar_fd(' ', 1);
@@ -137,7 +146,11 @@ void printLine(uint32_t flags_mask, struct filesData file, struct column_max_wid
 	
 	if (!first || flagIsSet(flags_mask, 'l') || flagIsSet(flags_mask, 'g') || flagIsSet(flags_mask, 's'))
 		ft_putchar_fd(' ', 1);
-	handle_color(file);
+
+	if (file.type == DT_LNK && (flagIsSet(flags_mask, 'l') || flagIsSet(flags_mask, 'g')))
+		printSymlink(file);
+	else
+		handle_color(file);
 
 	if (flagIsSet(flags_mask, 'l') || flagIsSet(flags_mask, 'g')) write(1, "\n", 1);
 
